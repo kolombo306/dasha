@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Игра на угадывание</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Advent Pro', Arial, Helvetica, sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+        font-variation-settings: 'wdth' 100;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+      }
+
+      /* Рамка вокруг #codeDisplay */
+      #codeDisplay {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        border: 2px solid #000;
+        padding: 10px;
+        display: inline-block;
+        background-color: #fff;
+      }
+
+      #question {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      input,
+      button {
+        font-size: 18px;
+        padding: 10px;
+        margin-top: 10px;
+        width: 200px;
+        text-align: center;
+      }
+
+      #gameContainer {
+        display: none;
+      }
+
+      /* Анимация для изменения цвета каждой буквы */
+      @keyframes colorChange {
+        0% {
+          color: red;
+        }
+        25% {
+          color: blue;
+        }
+        50% {
+          color: green;
+        }
+        75% {
+          color: orange;
+        }
+        100% {
+          color: purple;
+        }
+      }
+
+      .win-animation span {
+        display: inline-block;
+        animation: colorChange 2s infinite;
+      }
+
+      .win-animation span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .win-animation span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .win-animation span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .win-animation span:nth-child(4) {
+        animation-delay: 0.6s;
+      }
+      .win-animation span:nth-child(5) {
+        animation-delay: 0.8s;
+      }
+      .win-animation span:nth-child(6) {
+        animation-delay: 1s;
+      }
+      .win-animation span:nth-child(7) {
+        animation-delay: 1.2s;
+      }
+      .win-animation span:nth-child(8) {
+        animation-delay: 1.4s;
+      }
+      .win-animation span:nth-child(9) {
+        animation-delay: 1.6s;
+      }
+      .win-animation span:nth-child(10) {
+        animation-delay: 1.8s;
+      }
+      .win-animation span:nth-child(11) {
+        animation-delay: 2s;
+      }
+
+      /* Медиазапросы для мобильных устройств */
+      @media (max-width: 600px) {
+        body {
+          margin: 20px;
+        }
+        #codeDisplay {
+          font-size: 20px;
+          letter-spacing: 3px;
+        }
+        #question {
+          font-size: 16px;
+        }
+        input,
+        button {
+          font-size: 16px;
+          padding: 8px;
+        }
+      }
+
+      /* Медиазапросы для планшетов */
+      @media (min-width: 601px) and (max-width: 1024px) {
+        body {
+          margin: 30px;
+        }
+        #codeDisplay {
+          font-size: 22px;
+          letter-spacing: 4px;
+        }
+        #question {
+          font-size: 17px;
+        }
+        input,
+        button {
+          font-size: 17px;
+          padding: 9px;
+        }
+      }
+
+      /* Медиазапросы для больших экранов */
+      @media (min-width: 1025px) {
+        body {
+          margin: 50px;
+        }
+        #codeDisplay {
+          font-size: 24px;
+          letter-spacing: 5px;
+        }
+        #question {
+          font-size: 18px;
+        }
+        input,
+        button {
+          font-size: 18px;
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="codeDisplay">****-****-***</div>
+    <button id="startGame">Начать игру</button>
+    <div id="gameContainer">
+      <p id="question"></p>
+      <input type="text" id="answerInput" />
+      <button id="submitAnswer">Ответить</button>
+    </div>
+    <script>
+      // Функция для дешифровки строки из Base64
+      function decodeBase64(str) {
+        return decodeURIComponent(escape(atob(str)));
+      }
+
+      // Зашифрованный secretCode
+      const encryptedSecretCode = 'MTIzNDEyMzQxMjM=';
+      // Дешифрованный secretCode
+      const secretCode = decodeBase64(encryptedSecretCode).toUpperCase();
+
+      const questions = [
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+        'Как называется процесс написания кода?',
+      ];
+
+      const answers = [
+        'MQ==',
+        'Mg==',
+        'Mw==',
+        'NA==',
+        'MQ==',
+        'Mg==',
+        'Mw==',
+        'NA==',
+        'MQ==',
+        'Mg==',
+        'Mw==',
+      ]
+        .map(decodeBase64)
+        .map((x) => x.toLowerCase());
+
+      let starIndex = 0;
+      let answersIndex = 0;
+      let codeArray = [];
+
+      document
+        .getElementById('startGame')
+        .addEventListener('click', function () {
+          alert(
+            'Правила:\nОтвечайте на вопросы на английском языке.\nРегистр ответа неважен.'
+          );
+          this.style.display = 'none';
+          const container = document.getElementById('gameContainer');
+          container.style.display = 'flex';
+          container.style.flexDirection = 'column';
+          container.style.alignItems = 'center';
+          container.style.gap = '10px'; // Укажи нужный размер отступов
+          askQuestion();
+        });
+
+      function askQuestion() {
+        if (answersIndex < secretCode.length) {
+          document.getElementById('question').textContent =
+            questions[answersIndex];
+        } else {
+          document.getElementById('gameContainer').style.display = 'none';
+          const codeDisplay = document.getElementById('codeDisplay');
+          codeDisplay.innerHTML = codeArray
+            .map((char, index) => `<span>${char}</span>`)
+            .join('');
+          codeDisplay.classList.add('win-animation');
+          alert('Поздравляем! Вы угадали весь код!');
+        }
+      }
+
+      document
+        .getElementById('submitAnswer')
+        .addEventListener('click', function () {
+          let userAnswer = document
+            .getElementById('answerInput')
+            .value.trim()
+            .toLowerCase();
+          console.table({
+            userAnswer,
+            answers: answers[answersIndex],
+            answersIndex,
+          });
+          if (userAnswer === answers[answersIndex]) {
+            codeArray = document
+              .getElementById('codeDisplay')
+              .textContent.split('');
+
+            for (let i = starIndex; i < codeArray.length; i++) {
+              if (codeArray[i] === '*') {
+                starIndex++;
+                codeArray[i] = secretCode[answersIndex];
+                answersIndex++;
+                break;
+              } else {
+                starIndex++;
+              }
+            }
+            document.getElementById('codeDisplay').textContent =
+              codeArray.join('');
+
+            document.getElementById('answerInput').value = '';
+            askQuestion();
+          } else {
+            alert('Неверный ответ, попробуйте снова!');
+            document.getElementById('answerInput').value = '';
+          }
+        });
+    </script>
+  </body>
+</html>
